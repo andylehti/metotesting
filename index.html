@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Dynamic SEO Metadata -->
+    <title>Metopedia</title>
+    <meta id="meta-desc" name="description" content="Metopedia: The free encyclopedia.">
+    <meta name="keywords" content="wiki, metopedia, knowledge, encyclopedia">
+    <meta property="og:site_name" content="Metopedia">
+    <meta property="og:type" content="website">
+
+    <!-- KaTeX for Mathematical Rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+    <style id="wiki-styles">
+        /* AUTHENTIC WIKIPEDIA VECTOR SKIN (Pre-2022) */
+        :root {
+            --bg-color: #f6f6f6;
+            --content-bg: #ffffff;
+            --border-color: #a2a9b1;
+            --link-color: #0645ad;
+            --link-visited: #0b0080;
+            --link-hover: #0645ad;
+            --link-new: #ba0000;
+            --text-color: #202122;
+            --heading-font: 'Linux Libertine', 'Georgia', 'Times', serif;
+            --body-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Lato, Helvetica, Arial, sans-serif;
+            --code-font: 'Consolas', 'Courier New', monospace;
+        }
+
+        body { margin: 0; padding: 0; font-family: var(--body-font); font-size: 0.875em; line-height: 1.6; background-color: var(--bg-color); color: var(--text-color); overflow-y: scroll; }
+        
+        /* Core Layout Structure */
+        #mw-page-base { height: 5em; background-position: bottom left; background-repeat: repeat-x; background-image: linear-gradient(to bottom, #ffffff 50%, #f6f6f6 100%); }
+        #mw-head-base { margin-top: -5em; margin-left: 11em; height: 5em; }
+        #content { margin-left: 11em; padding: 1.25em 1.5em 1.5em 1.5em; background-color: var(--content-bg); border: 1px solid var(--border-color); border-right-width: 0; border-top-width: 0; min-height: 100vh; position: relative; z-index: 2;}
+        #mw-panel { position: absolute; top: 0; width: 11em; left: 0; padding-top: 1em; }
+        
+        /* Logo */
+        #p-logo { display: block; width: 11em; height: 10em; margin-bottom: 1em; text-decoration: none; text-align: center; }
+        #p-logo-icon { width: 90px; height: 90px; margin: 0 auto; background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="20,80 50,20 80,80 50,60" stroke="%23333" stroke-width="4" fill="%23f6f6f6"/><path d="M50 20 L50 60" stroke="%23333" stroke-width="2"/></svg>'); background-size: contain; background-repeat: no-repeat; background-position: center; transition: transform 0.2s;}
+        #p-logo:hover #p-logo-icon { transform: scale(1.05); }
+        #p-logo-text { font-family: var(--heading-font); font-size: 1.4em; display: block; letter-spacing: 1px; color: #000; margin-top: -5px;}
+        
+        /* Sidebar Navigation */
+        .portal { margin: 0 0.6em 0 0.7em; padding: 0.25em 0; border-bottom: 1px solid #c8ccd1; }
+        .portal:last-child { border-bottom: none; }
+        .portal h3 { font-size: 0.75em; color: #54595d; font-weight: normal; margin: 0.5em 0 0 0.66em; padding: 0.25em 0; cursor: default; }
+        .portal ul { list-style: none; margin: 0; padding: 0.3em 0 0.5em 0; }
+        .portal li { margin: 0; padding: 0.25em 0; font-size: 0.75em; line-height: 1.2em; }
+        .portal li a { color: var(--link-color); text-decoration: none; cursor: pointer; }
+        .portal li a:hover { text-decoration: underline; }
+
+        /* Top Tabs (Vector) */
+        #left-navigation { float: left; margin-top: 2.5em; margin-bottom: -1px; }
+        #right-navigation { float: right; margin-top: 2.5em; margin-bottom: -1px; }
+        .vectorTabs { float: left; height: 2.5em; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAsCAYAAAC0RofqAAAAKElEQVQIW2P4//8/Awx/IBngEMX/YcRwkA2B+BWEr8AwCq9n0E0kDwAAy00v68205+EAAAAASUVORK5CYII='); background-position: left bottom; background-repeat: repeat-x; padding-left: 1px; }
+        .vectorTabs ul { float: left; height: 100%; list-style: none; margin: 0; padding: 0; }
+        .vectorTabs li { float: left; line-height: 1.125em; display: block; height: 100%; margin: 0; padding: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAsCAYAAAC0RofqAAAAIklEQVQIW2P4//8/Awx/IBngEMX/YcRwkA2B+BWEr8AwCq9n0E0kDwAAmUgv6+6T5ZAAAAAASUVORK5CYII='); background-position: right bottom; background-repeat: no-repeat; }
+        .vectorTabs li.selected { background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAsCAYAAAC0RofqAAAAIUlEQVQIW2P4//8/Awx/QJjhw4cPUXwGI34FhlF4PYNuInkAAGZDL+uv/v/1AAAAAElFTkSuQmCC'); }
+        .vectorTabs li a { display: block; height: 2.5em; padding-top: 1.25em; padding-left: 0.8em; padding-right: 0.8em; color: var(--link-color); cursor: pointer; text-decoration: none; font-size: 0.8em; }
+        .vectorTabs li.selected a { color: #333; font-weight: bold; cursor: default; }
+
+        /* Search Bar */
+        #p-search { float: left; margin-right: 1.5em; margin-left: 0.5em; margin-top: 2.8em; }
+        #simpleSearch { display: flex; width: 20vw; min-width: 5em; max-width: 20em; background-color: #fff; border: 1px solid #a2a9b1; padding: 0.2em 0.4em; border-radius: 2px; }
+        #simpleSearch input { flex: 1; background: transparent; border: none; outline: none; font-size: 0.8em; }
+
+        /* Article Typography */
+        #firstHeading { font-family: var(--heading-font); font-weight: normal; margin-bottom: 0.25em; border-bottom: 1px solid var(--border-color); font-size: 1.8em; line-height: 1.3; padding-bottom: 0; margin-top: 0; }
+        #siteSub { font-size: 84%; color: #54595d; margin-top: 0; margin-bottom: 1.5em; }
+        
+        .mw-parser-output h2 { font-family: var(--heading-font); font-size: 1.5em; border-bottom: 1px solid var(--border-color); font-weight: normal; margin-top: 1.2em; margin-bottom: 0.25em; padding-bottom: 2px; clear: left;}
+        .mw-parser-output h3 { font-family: var(--body-font); font-size: 1.2em; font-weight: bold; margin-top: 0.8em; margin-bottom: 0.3em; }
+        .mw-parser-output h4 { font-family: var(--body-font); font-size: 1em; font-weight: bold; margin-top: 0.5em; margin-bottom: 0.3em; }
+        
+        /* Links */
+        .mw-parser-output a { color: var(--link-color); text-decoration: none; cursor: pointer; }
+        .mw-parser-output a:hover { text-decoration: underline; }
+        .mw-parser-output a.new { color: var(--link-new); }
+        .mw-parser-output a.external { background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24"><path fill="%230645ad" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"/></svg>') no-repeat right center; padding-right: 13px; }
+        
+        /* Text Elements */
+        .mw-parser-output p { margin: 0.5em 0; line-height: 1.6; }
+        .mw-parser-output ul { margin: 0.3em 0 0 1.6em; padding: 0; list-style-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="5" height="5"><rect width="5" height="5" fill="%230645ad"/></svg>'); }
+        .mw-parser-output ol { margin: 0.3em 0 0 3.2em; padding: 0; list-style-type: decimal; }
+        .mw-parser-output li { margin-bottom: 0.1em; }
+        .mw-parser-output dl { margin-top: 0.2em; margin-bottom: 0.5em; }
+        .mw-parser-output dt { font-weight: bold; margin-bottom: 0.1em; }
+        .mw-parser-output dd { margin-left: 1.6em; margin-bottom: 0.1em; }
+        .mw-parser-output hr { height: 1px; border: 0; background-color: var(--border-color); margin: 1em 0; clear: both;}
+        
+        /* Advanced Elements */
+        .hatnote { font-style: italic; margin-bottom: 0.5em; padding-left: 1.6em; color: #202122; background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23a2a9b1"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>') no-repeat left 2px; background-size: 14px; font-size: 0.9em;}
+        .quote-box { margin: 1em 2.5em; padding-left: 1em; border-left: 4px solid #c8ccd1; background: #fdfdfd; font-size: 1.05em; color: #333; font-family: var(--heading-font); }
+        .poem { font-style: italic; font-family: var(--heading-font); white-space: pre-wrap; margin: 1em 2.5em; line-height: 1.5; }
+        
+        /* Code */
+        .mw-parser-output pre, .mw-parser-output .mw-highlight { border: 1px dashed #2f6fab; padding: 1em; background-color: #f8f9fa; overflow-x: auto; font-family: var(--code-font); font-size: 0.9em; white-space: pre-wrap; margin: 1em 0; }
+        .mw-parser-output code { font-family: var(--code-font); background-color: #f8f9fa; border: 1px solid #eaecf0; padding: 1px 4px; border-radius: 2px; }
+        
+        /* Tables */
+        .wikitable { background-color: #f8f9fa; color: #202122; margin: 1em 0; border: 1px solid #a2a9b1; border-collapse: collapse; max-width: 100%; overflow-x: auto; }
+        .wikitable > tbody > tr > th, .wikitable > tbody > tr > td { border: 1px solid #a2a9b1; padding: 0.3em 0.5em; vertical-align: top; }
+        .wikitable > tbody > tr > th { background-color: #eaecf0; text-align: center; }
+
+        /* Infoboxes */
+        .infobox { float: right; clear: right; margin: 0 0 1em 1em; border: 1px solid var(--border-color); background-color: #f8f9fa; padding: 0.2em; font-size: 88%; width: 22em; line-height: 1.5em; }
+        .infobox th, .infobox td { vertical-align: top; padding: 0.2em 0.6em; }
+        .infobox .infobox-header { text-align: center; font-size: 125%; font-weight: bold; background-color: #e0e0e0; }
+        .infobox .infobox-subheader { text-align: center; background-color: #eaecf0; font-weight: bold; border-top: 1px solid #ccc; }
+        .infobox .infobox-label { text-align: left; font-weight: bold; width: 35%; }
+        .infobox .infobox-image { text-align: center; padding: 0.8em !important; background: #fff;}
+
+        /* Images / Media */
+        .thumb { margin-bottom: 0.5em; border: 1px solid #c8ccd1; padding: 3px; background-color: #f8f9fa; clear: right; }
+        .tright { float: right; margin: 0 0 1.3em 1.4em; }
+        .tleft { float: left; margin: 0 1.4em 1.3em 0; }
+        .tcenter { margin: 1em auto; display: table; }
+        .thumb-img { border: 1px solid #eaecf0; max-width: 100%; height: auto; display: block; }
+        .thumbcaption { padding: 3px; font-size: 94%; color: #54595d; line-height: 1.4; text-align: left; }
+
+        /* Table of Contents */
+        .toc { display: inline-table; background-color: #f8f9fa; border: 1px solid var(--border-color); padding: 7px; margin-top: 1em; margin-bottom: 1em; font-size: 95%; }
+        .toc-title { text-align: center; margin-bottom: 5px; }
+        .toc-title h2 { display: inline; border: none; font-size: 100%; font-family: var(--body-font); font-weight: bold; margin: 0; padding: 0; }
+        .toc ul { list-style: none; margin: 0; padding: 0 1.5em 0 0; background: none;}
+        .toc li { margin-bottom: 0.2em; list-style-image: none;}
+        .toc-number { color: #54595d; padding-right: 0.5em; }
+
+        /* Citations & Categories */
+        .catlinks { border: 1px solid #a2a9b1; background-color: #f8f9fa; padding: 0.5em; margin-top: 2.5em; clear: both; font-size: 90%; }
+        .catlinks ul { display: inline; list-style: none; margin: 0; padding: 0; }
+        .catlinks li { display: inline-block; border-left: 1px solid #a2a9b1; padding: 0 0.5em; margin: 0; list-style-image: none;}
+        .catlinks li:first-child { border-left: none; }
+        
+        .reference { font-size: 80%; line-height: 1; vertical-align: super; }
+        .references { font-size: 90%; margin-top: 0.3em; }
+        .mw-cite-backlink { font-family: var(--body-font); color: var(--link-color); padding-right: 4px; }
+        .references li:target { background-color: #eaf3ff; }
+
+        /* Multi-column (for Main Page) */
+        .wiki-col-container { display: flex; flex-wrap: wrap; gap: 1.5em; margin-top: 1em; }
+        .wiki-col { flex: 1; min-width: 300px; }
+
+        /* Footer */
+        #footer { margin-left: 11em; margin-top: 0; padding: 1.25em 1.5em; direction: ltr; font-size: 0.75em; color: #202122; border-top: 1px solid #a2a9b1; background: #f6f6f6;}
+        #footer-info { margin-bottom: 1em; line-height: 1.5; color: #54595d; }
+        #footer-links { list-style: none; margin: 0; padding: 0; display: flex; gap: 1.2em; flex-wrap: wrap; }
+        #footer-links a { color: var(--link-color); text-decoration: none; cursor: pointer; }
+        #footer-links a:hover { text-decoration: underline; }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            #mw-panel { display: none; }
+            #content, #footer, #mw-head-base { margin-left: 0; }
+            #left-navigation { margin-left: 1em; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background & Top Tabs -->
+    <div id="mw-page-base"></div>
+    <div id="mw-head-base">
+        <div id="left-navigation">
+            <div class="vectorTabs">
+                <ul>
+                    <li class="selected"><a>Article</a></li>
+                    <li><a onclick="alert('Talk pages are not enabled in this static instance.')">Talk</a></li>
+                </ul>
+            </div>
+        </div>
+        <div id="right-navigation">
+            <div id="p-search">
+                <form onsubmit="event.preventDefault(); navigateTo(document.getElementById('searchInput').value);">
+                    <div id="simpleSearch">
+                        <input type="search" id="searchInput" placeholder="Search Metopedia" autocomplete="off">
+                    </div>
+                </form>
+            </div>
+            <div class="vectorTabs">
+                <ul>
+                    <li class="selected"><a>Read</a></li>
+                    <li><a onclick="viewSource()">View source</a></li>
+                    <li><a onclick="alert('History tracking is managed via Git commits in this static architecture.')">View history</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar Navigation -->
+    <div id="mw-panel">
+        <a id="p-logo" href="#/Main_Page" title="Visit the main page">
+            <div id="p-logo-icon"></div>
+            <span id="p-logo-text">METOPEDIA</span>
+        </a>
+        <div id="sidebar-container">
+            <!-- Populated by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div id="content">
+        <h1 id="firstHeading">Loading...</h1>
+        <div id="siteSub">From Metopedia, the free encyclopedia</div>
+        
+        <div id="bodyContent" class="mw-parser-output">
+            <div id="loading-indicator" style="color: #54595d; padding: 2em 0;">Parsing repository data...</div>
+            <div id="rendered-content"></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div id="footer">
+        <div id="footer-info">
+            Text is available under the <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative Commons Attribution-ShareAlike 4.0 License</a>; additional terms may apply. By using this site, you agree to the Terms of Use and Privacy Policy. Metopedia® is a registered trademark of the Metomedia Foundation, Inc., a non-profit organization.
+        </div>
+        <ul id="footer-links">
+            <!-- Populated by JavaScript -->
+        </ul>
+    </div>
+
+<!-- ========================================== -->
+<!-- VIRTUAL GITHUB REPOSITORY (JSON CONFIGS)   -->
+<!-- ========================================== -->
+<script type="application/json" id="config-sidebar">
+{
+    "Navigation": [
+        {"label": "Main page", "link": "Main_Page"},
+        {"label": "Contents", "link": "Special:Sitemap"},
+        {"label": "Random article", "link": "Special:Random"},
+        {"label": "About Metopedia", "link": "About"}
+    ],
+    "Interaction": [
+        {"label": "Help", "link": "Help"},
+        {"label": "Showcase", "link": "Showcase"},
+        {"label": "Contact page", "link": "Contact"}
+    ],
+    "Tools": [
+        {"label": "What links here", "link": "Special:WhatLinksHere"},
+        {"label": "Sitemap", "link": "Special:Sitemap"},
+        {"label": "Printable version", "link": "javascript:window.print()"}
+    ]
+}
+</script>
+
+<script type="application/json" id="config-footer">
+[
+    {"label": "Privacy policy", "link": "Privacy_Policy"},
+    {"label": "About Metopedia", "link": "About"},
+    {"label": "Contact Metopedia", "link": "Contact"},
+    {"label": "Cookie statement", "link": "Cookies"},
+    {"label": "Mobile view", "link": "javascript:alert('Mobile view active via responsive CSS.')"},
+    {"label": "Sitemap", "link": "Special:Sitemap"}
+]
+</script>
+
+<!-- ========================================== -->
+<!-- VIRTUAL GITHUB REPOSITORY (MARKDOWN FILES) -->
+<!-- ========================================== -->
+
+<script type="text/markdown" id="article-Main_Page">
+== Welcome to Metopedia ==
+<div style="font-size: 1.1em; margin-bottom: 1em;">Metopedia is a free-content, knowledge engine written and maintained by a community of conceptual engineers.</div>
+
+<div class="wiki-col-container">
+    <div class="wiki-col" style="flex: 1.5;">
+        <h2 style="margin-top: 0; background-color: #cef2e0; padding: 0.2em 0.4em; border: 1px solid #a3bfb1; font-size: 1.2em;">Featured Concept: Cognitive Typology</h2>
+        [[File:https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Carl_Jung_in_1910.jpg/200px-Carl_Jung_in_1910.jpg|thumb|left|120px|Carl Jung]]
+        '''[[Cognitive_Typology|MBTI]]''' (Myers–Briggs Type Indicator) pertains to the cognitive neural pathways of the brain. While this inherently affects an individual's behavior, it does not determine arbitrary behavioral traits such as organization, open-mindedness, preference for strict structure, or tidiness.
+
+        Two distinct intuitive thinking paths have been identified within the framework:
+        * '''[[INTP]]''': The ''evolutionary'' pathway. Integrates data continuously to refine internal logic.
+        * '''[[INTJ]]''': The ''revolutionary'' pathway. Dismantles and entirely rebuilds external systems.
+        
+        Read more about the foundational theories of [[Carl_Jung]] and the structural mechanics of [[Typology]].
+    </div>
+    
+    <div class="wiki-col" style="flex: 1;">
+        <h2 style="margin-top: 0; background-color: #cedff2; padding: 0.2em 0.4em; border: 1px solid #a3b1bf; font-size: 1.2em;">Did you know...</h2>
+        * ...that this engine operates entirely as a static, single-file HTML instance?
+        * ...that you can view all supported markup elements on the '''[[Showcase]]''' page?
+        * ...that missing links will appear in <span style="color:var(--link-new)">red</span> and generate a creation prompt? Example: [[Non-existent_Page]].
+        * ...that mathematical formatting is powered by KaTeX? {{math|''E'' = ''mc''<sup>2</sup>}}
+    </div>
+</div>
+
+[[Category:Main Pages]]
+</script>
+
+<script type="text/markdown" id="article-Showcase">
+{{Infobox
+| title = Metopedia Markup Showcase
+| image = [[File:https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Wikipedia-logo-v2.svg/150px-Wikipedia-logo-v2.svg.png|center|120px|Metopedia Logo]]
+| header1 = Engine Specifications
+| Architecture = Single-file HTML
+| Parser = Advanced Regex (JS)
+| Math = KaTeX Engine
+| header2 = Capabilities
+| Tables = Full Support
+| References = Auto-numbering
+| Images = Floats, Thumbs, Captions
+}}
+'''Metopedia''' is an advanced knowledge engine designed to render complex wikitext in a static environment. This article demonstrates every core capability of the current parser.
+
+== Text Formatting ==
+Metopedia supports various levels of emphasis:
+* ''Italicized text'' for titles or emphasis.
+* '''Bold text''' for main subjects.
+* '''''Bold and italicized text''''' for strong emphasis.
+* <s>Strikethrough</s> for obsolete data.
+* Inline <code>code snippets</code>.
+
+=== Block Elements ===
+{{Quote|The evolutionary neural path relies on continuous data integration, whereas the revolutionary path relies on systemic overhaul.|Metopedia Core Philosophy}}
+
+<poem>
+In Metopedia did Gemini
+  A stately pleasure-dome decree:
+Where Logic, the sacred river, ran
+Through caverns measureless to man.
+</poem>
+
+== Media and Images ==
+Images use the authentic media wiki syntax. They can be aligned left, right, or center, and include thumbnail captions.
+[[File:https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Celtic_cross_at_Monasterboice.jpg/250px-Celtic_cross_at_Monasterboice.jpg|thumb|right|200px|A right-aligned thumbnail image with a caption.]]
+
+== Data Structures ==
+=== Tables ===
+{| class="wikitable"
+|+ System Performance Metrics
+! Feature !! Support !! Complexity
+|-
+| Basic Text || Full || Low
+|-
+| KaTeX Math || Full || Medium
+|-
+| Dynamic TOC || Full || Medium
+|-
+| Auto-Citations || Full || High
+|}
+
+=== Lists ===
+Metopedia handles nested unordered and ordered lists.
+* Phase 1: Planning
+** Neural Pathway Analysis
+*** INTP Focus
+# Phase 2: Implementation
+## Core Engine
+### Regex Parser
+
+== Mathematical Typesetting ==
+Using KaTeX, we can render complex equations. 
+The probability density function of the normal distribution is:
+$$ f(x) = \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{x-\mu}{\sigma}\right)^2} $$
+
+Inline math works as well: $a^2 + b^2 = c^2$.
+
+== Citations and References ==
+References are automatically collected and numbered.<ref>Smith, J. (2026). "Static Wikis." Web Systems.</ref> You can use named references to cite the same source multiple times.<ref name="doe">Doe, A. (2025). "Neural Pathing."</ref> Here is the second citation to Doe.<ref name="doe" />
+
+== See also ==
+{{Main|Cognitive_Typology}}
+* [[Main_Page]]
+* [[About]]
+
+== References ==
+<references/>
+
+[[Category:Documentation]]
+[[Category:Showcase]]
+</script>
+
+<script type="text/markdown" id="article-Cognitive_Typology">
+{{Infobox
+| title = Cognitive Typology
+| type = Psychological Framework
+| basis = Neural Pathways
+| variants = 16 Archetypes
+| focus = INTP, INTJ
+}}
+'''Cognitive Typology''' (often associated with the MBTI) pertains to the specific cognitive neural pathways of the human brain. While these fixed pathways inherently affect an individual's behavior and processing, they do not determine arbitrary behavioral traits (such as tidiness, organizational skills, or strict adherence to structure).<ref>Jung, C.G. (1921). ''Psychological Types''.</ref>
+
+== Evolutionary vs. Revolutionary Paths ==
+Among the intuitive-thinking architectures, two distinct operational modes are observed:
+
+=== The INTP: Evolutionary ===
+{{Main|INTP}}
+The [[INTP]] operates on an '''evolutionary''' neural path. Utilizing Introverted Thinking (Ti) as their primary framework, they constantly absorb new data (via Extroverted Intuition) to refine, adapt, and iterate upon an existing internal logical structure. They seek to update the system from within.
+
+=== The INTJ: Revolutionary ===
+{{Main|INTJ}}
+The [[INTJ]] operates on a '''revolutionary''' neural path. Utilizing Introverted Intuition (Ni) paired with Extroverted Thinking (Te), they observe systemic flaws and conceptualize an entirely new, optimized future state. Rather than updating the old system, they seek to dismantle and rebuild it entirely.
+
+== References ==
+<references/>
+[[Category:Psychology]]
+</script>
+
+<script type="text/markdown" id="article-INTP">
+== INTP ==
+{{Main|Cognitive_Typology}}
+The '''INTP''' is characterized by the Introverted Thinking (Ti) cognitive function. Their neural pathway is fundamentally '''evolutionary'''. They thrive on taking existing data and frameworks and continuously updating, refining, and perfecting them. 
+
+Unlike the [[INTJ]], who seeks to overthrow a system, the INTP seeks to fully understand it and optimize its underlying logic.
+
+[[Category:Psychology]]
+[[Category:Typology Archetypes]]
+</script>
+
+<script type="text/markdown" id="article-INTJ">
+== INTJ ==
+{{Main|Cognitive_Typology}}
+The '''INTJ''' is characterized by the Introverted Intuition (Ni) cognitive function. Their neural pathway is fundamentally '''revolutionary'''. When presented with a flawed system, their instinct is not to patch it (like the [[INTP]]), but to envision a completely new architecture and forcefully rebuild reality to match that vision.
+
+[[Category:Psychology]]
+[[Category:Typology Archetypes]]
+</script>
+
+<script type="text/markdown" id="article-Carl_Jung">
+== Carl Jung ==
+[[File:https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Carl_Jung_in_1910.jpg/200px-Carl_Jung_in_1910.jpg|thumb|right|180px|Carl Jung in 1910]]
+'''Carl Gustav Jung''' was a Swiss psychiatrist and psychoanalyst who founded analytical psychology. His work laid the foundation for modern [[Cognitive_Typology]], identifying the primary cognitive functions that define how human neural pathways process information.
+
+[[Category:Biographies]]
+[[Category:Psychology]]
+</script>
+
+<script type="text/markdown" id="article-About">
+== About Metopedia ==
+Metopedia is an experimental, serverless wiki engine. It utilizes a custom JavaScript regex parser to transform standard wikitext markup into rich HTML on the client side, allowing an entire encyclopedia to be hosted on static platforms like GitHub Pages.
+
+[[Category:Documentation]]
+</script>
+
+<!-- ========================================== -->
+<!-- CORE ENGINE SCRIPT                         -->
+<!-- ========================================== -->
+<script>
+// --- UI Elements ---
+const contentDiv = document.getElementById('rendered-content');
+const headingDiv = document.getElementById('firstHeading');
+const titleTag = document.querySelector('title');
+const metaDesc = document.getElementById('meta-desc');
+const loader = document.getElementById('loading-indicator');
+const sidebarContainer = document.getElementById('sidebar-container');
+const footerLinksContainer = document.getElementById('footer-links');
+
+// --- State Variables ---
+let currentArticleName = '';
+let siteCategories = new Set(); // Tracks all known categories
+
+// --- Initialization ---
+function initSite() {
+    // 1. Build Sidebar
+    const sidebarConfig = JSON.parse(document.getElementById('config-sidebar').textContent);
+    let sidebarHtml = '';
+    for (const [portalName, links] of Object.entries(sidebarConfig)) {
+        sidebarHtml += `<div class="portal"><h3>${portalName}</h3><ul>`;
+        links.forEach(link => {
+            const href = link.link.startsWith('javascript') ? link.link : `#/${link.link.replace(/ /g, '_')}`;
+            sidebarHtml += `<li><a href="${href}">${link.label}</a></li>`;
+        });
+        sidebarHtml += `</ul></div>`;
+    }
+    sidebarContainer.innerHTML = sidebarHtml;
+
+    // 2. Build Footer
+    const footerConfig = JSON.parse(document.getElementById('config-footer').textContent);
+    let footerHtml = '';
+    footerConfig.forEach(link => {
+        const href = link.link.startsWith('javascript') ? link.link : `#/${link.link.replace(/ /g, '_')}`;
+        footerHtml += `<li><a href="${href}">${link.label}</a></li>`;
+    });
+    footerLinksContainer.innerHTML = footerHtml;
+
+    // 3. Pre-scan repo for categories and valid links (for red-linking)
+    document.querySelectorAll('script[type="text/markdown"]').forEach(script => {
+        const text = script.textContent;
+        const catMatches = text.matchAll(/\[\[Category:([^\]]+)\]\]/gi);
+        for (const match of catMatches) { siteCategories.add(match[1].trim()); }
+    });
+
+    // 4. Initial Load
+    window.addEventListener('hashchange', handleRoute);
+    handleRoute();
+}
+
+// --- Router ---
+function navigateTo(path) {
+    if(!path) return;
+    window.location.hash = `#/${path.trim().replace(/ /g, '_')}`;
+}
+
+function handleRoute() {
+    let hash = window.location.hash;
+    let articleName = 'Main_Page';
+    if (hash && hash.startsWith('#/')) {
+        articleName = decodeURIComponent(hash.substring(2));
+    }
+    loadArticle(articleName);
+}
+
+// --- Data Fetching & Virtual Filesystem ---
+function getAllArticles() {
+    let articles = [];
+    document.querySelectorAll('script[type="text/markdown"]').forEach(script => {
+        articles.push(script.id.replace('article-', ''));
+    });
+    return articles;
+}
+
+function fetchVirtualFile(articleName) {
+    return new Promise(resolve => {
+        setTimeout(() => {
+            // Special Handlers
+            if (articleName === 'Special:Sitemap') {
+                const list = getAllArticles().map(a => `* [[${a}|${a.replace(/_/g, ' ')}]]`).join('\n');
+                resolve(`= Sitemap =\nThis is an automatically generated list of all pages in the Metopedia repository.\n\n${list}\n\n== Categories ==\n${Array.from(siteCategories).map(c => `* [[Category:${c}]]`).join('\n')}`);
+                return;
+            }
+            if (articleName === 'Special:Random') {
+                const articles = getAllArticles();
+                const random = articles[Math.floor(Math.random() * articles.length)];
+                navigateTo(random);
+                resolve('Redirecting...');
+                return;
+            }
+            if (articleName.startsWith('Category:')) {
+                const catName = articleName.replace('Category:', '').replace(/_/g, ' ');
+                let matches = [];
+                document.querySelectorAll('script[type="text/markdown"]').forEach(script => {
+                    if (script.textContent.includes(`[[Category:${catName}]]`)) {
+                        const name = script.id.replace('article-', '');
+                        matches.push(`* [[${name}|${name.replace(/_/g, ' ')}]]`);
+                    }
+                });
+                const list = matches.length > 0 ? matches.join('\n') : "''No articles currently assigned to this category.''";
+                resolve(`= Category: ${catName} =\nThe following pages are in this category.\n\n${list}`);
+                return;
+            }
+
+            // Normal Article Lookup
+            const scriptTag = document.getElementById(`article-${articleName}`);
+            if (scriptTag) {
+                resolve(scriptTag.textContent);
+            } else {
+                // 404 Not Found
+                resolve(`= Not Found =\n'''Metopedia does not have an article with this exact name.'''\n\nIn a standard wiki, you could create this page. In this static GitHub replica, you must create a new file named <code>${articleName}.md</code> and inject it into the repository.\n\n* Return to the [[Main_Page]].\n* Search for related terms.\n[[Category:System errors]]`);
+            }
+        }, 50); // Slight delay to mimic network request
+    });
+}
+
+async function loadArticle(articleName) {
+    currentArticleName = articleName;
+    contentDiv.innerHTML = '';
+    loader.style.display = 'block';
+    
+    const displayTitle = articleName.replace(/_/g, ' ');
+    headingDiv.innerText = displayTitle;
+    titleTag.innerText = `${displayTitle} - Metopedia`;
+    metaDesc.setAttribute('content', `Metopedia article about ${displayTitle}`);
+
+    const rawMarkup = await fetchVirtualFile(articleName);
+    loader.style.display = 'none';
+    
+    contentDiv.innerHTML = parseWikitext(rawMarkup);
+    
+    // Trigger KaTeX
+    if (window.renderMathInElement) {
+        renderMathInElement(contentDiv, {
+            delimiters: [
+                {left: '$$', right: '$$', display: true},
+                {left: '$', right: '$', display: false}
+            ],
+            throwOnError: false
+        });
+    }
+
+    window.scrollTo(0, 0);
+}
+
+// --- Advanced Wikitext Parser Engine ---
+function parseWikitext(text) {
+    let html = text;
+    let refs = [];
+    let namedRefs = {};
+    let categories = [];
+    let protectedBlocks = [];
+
+    // Utility: Protect complex blocks from general regex mangling
+    function protect(content) {
+        protectedBlocks.push(content);
+        return `%%%PROTECTED_${protectedBlocks.length - 1}%%%`;
+    }
+
+    // 1. Protection Pass
+    html = html.replace(/<syntaxhighlight[^>]*>([\s\S]*?)<\/syntaxhighlight>/gi, (m, c) => protect(`<pre class="mw-highlight">${c.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>`));
+    html = html.replace(/<pre>([\s\S]*?)<\/pre>/gi, (m, c) => protect(`<pre>${c.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>`));
+    html = html.replace(/<nowiki>([\s\S]*?)<\/nowiki>/gi, (m, c) => protect(c.replace(/</g, '&lt;').replace(/>/g, '&gt;')));
+    html = html.replace(/\$\$(.*?)\$\$/gs, (m, c) => protect(`$$${c}$$`)); // Protect KaTeX
+    html = html.replace(/<math[^>]*>([\s\S]*?)<\/math>/gi, (m, c) => protect(`$${c}$`)); // Protect inline math
+    html = html.replace(/<poem[^>]*>([\s\S]*?)<\/poem>/gi, (m, c) => protect(`<div class="poem">${c}</div>`));
+    html = html.replace(/<!--[\s\S]*?-->/g, ''); // Strip comments
+
+    // 2. Infobox Engine (Robust Brace Counting not needed if strictly formatted, but fallback to regex)
+    html = html.replace(/\{\{Infobox\n([\s\S]*?)\n\}\}/gi, (match, content) => {
+        let infoboxHtml = '<table class="infobox"><tbody>';
+        content.split(/\n\|/).forEach(line => {
+            let parts = line.split('=');
+            if (parts.length >= 2) {
+                let key = parts[0].replace(/^\|/, '').trim();
+                let val = parts.slice(1).join('=').trim();
+                let lowerKey = key.toLowerCase();
+                
+                if (lowerKey === 'title' || lowerKey === 'name') {
+                    infoboxHtml += `<tr><th colspan="2" class="infobox-header">${val}</th></tr>`;
+                } else if (lowerKey.startsWith('header')) {
+                    infoboxHtml += `<tr><th colspan="2" class="infobox-subheader">${val}</th></tr>`;
+                } else if (lowerKey === 'image') {
+                    infoboxHtml += `<tr><td colspan="2" class="infobox-image">${parseInline(val)}</td></tr>`;
+                } else {
+                    infoboxHtml += `<tr><th scope="row" class="infobox-label">${key}</th><td>${parseInline(val)}</td></tr>`;
+                }
+            }
+        });
+        infoboxHtml += '</tbody></table>';
+        return protect(infoboxHtml);
+    });
+
+    // 3. Templates (Quotes, Hatnotes, Math)
+    html = html.replace(/\{\{(?:Main|See also)\|([^\}]+)\}\}/gi, (m, link) => protect(`<div class="hatnote">Main article: <a href="#/${link.trim().replace(/ /g, '_')}">${link.replace(/_/g, ' ')}</a></div>`));
+    html = html.replace(/\{\{Quote\|([^\|\}]+)(?:\|([^\|\}]+))?\}\}/gi, (m, text, author) => protect(`<div class="quote-box">${parseInline(text)}${author ? `<br><small>— ${parseInline(author)}</small>` : ''}</div>`));
+    html = html.replace(/\{\{math\|([^\}]+)\}\}/gi, '<span style="font-family: serif; font-style: italic;">$1</span>');
+
+    // 4. Standard Tables {| ... |}
+    html = html.replace(/^\{\|([\s\S]*?)^\|\}/gm, (match, content) => {
+        let tableHeader = content.split('\n')[0];
+        let tableHtml = `<table ${tableHeader.replace(/class="wikitable"/, 'class="wikitable"')}><tbody>`;
+        if(!tableHeader.includes('class=')) tableHtml = tableHtml.replace('<table', '<table class="wikitable"');
+        
+        let rows = content.substring(tableHeader.length).split(/\n\|-/);
+        rows.forEach(row => {
+            if (!row.trim()) return;
+            let rowHtml = '<tr>';
+            let cells = row.replace(/\|\|/g, '\n|').replace(/!!/g, '\n!').trim().split(/\n(?=[|!])/);
+            cells.forEach(cell => {
+                cell = cell.trim();
+                if (cell.startsWith('|+')) {
+                    tableHtml = tableHtml.replace('<tbody>', `<caption>${cell.substring(2).trim()}</caption><tbody>`);
+                } else if (cell.startsWith('!')) {
+                    let c = cell.substring(1);
+                    let m = c.match(/^([^|\n]+)\|([^|\n]+)$/);
+                    if(m) rowHtml += `<th ${m[1]}>${parseInline(m[2].trim())}</th>`;
+                    else rowHtml += `<th>${parseInline(c.trim())}</th>`;
+                } else if (cell.startsWith('|')) {
+                    let c = cell.substring(1);
+                    let m = c.match(/^([^|\n]+)\|([^|\n]+)$/);
+                    if(m) rowHtml += `<td ${m[1]}>${parseInline(m[2].trim())}</td>`;
+                    else rowHtml += `<td>${parseInline(c.trim())}</td>`;
+                }
+            });
+            rowHtml += '</tr>';
+            if(rowHtml !== '<tr></tr>') tableHtml += rowHtml;
+        });
+        return protect(tableHtml + '</tbody></table>');
+    });
+
+    // 5. Media/Images
+    html = html.replace(/\[\[(?:File|Image):([^\|\]]+)(?:\|([^\]]+))?\]\]/gi, (match, url, params) => {
+        let opts = params ? params.split('|') : [];
+        let align = "tright", width = "220px", caption = "", isThumb = false;
+        opts.forEach(o => {
+            o = o.trim();
+            if (o === 'left') align = 'tleft';
+            else if (o === 'center') align = 'tcenter';
+            else if (o === 'right') align = 'tright';
+            else if (o === 'thumb') isThumb = true;
+            else if (o.match(/^\d+px$/)) width = o;
+            else caption = o; 
+        });
+
+        if (isThumb || caption) {
+            return protect(`<div class="thumb ${align}">
+                <div class="thumbinner" style="width:${width}">
+                    <img src="${url}" class="thumb-img" alt="${caption}">
+                    ${caption ? `<div class="thumbcaption">${parseInline(caption)}</div>` : ''}
+                </div>
+            </div>`);
+        }
+        return protect(`<img src="${url}" class="${align}" style="width:${width}; max-width:100%;" alt="${caption}">`);
+    });
+
+    // 6. Citations Collection
+    html = html.replace(/<ref\s*name="([^"]+)"\s*\/>/gi, (m, name) => {
+        if(namedRefs[name]) return `<sup class="reference"><a href="#cite_note-${namedRefs[name]}">[${namedRefs[name]}]</a></sup>`;
+        return `<sup>[ref broken]</sup>`;
+    });
+    html = html.replace(/<ref([^>]*)>([\s\S]*?)<\/ref>/gi, (match, attr, content) => {
+        refs.push(parseInline(content));
+        let num = refs.length;
+        let nameMatch = attr.match(/name="([^"]+)"/);
+        if (nameMatch) namedRefs[nameMatch[1]] = num;
+        return `<sup id="cite_ref-${num}" class="reference"><a href="#cite_note-${num}">[${num}]</a></sup>`;
+    });
+
+    // 7. Categories Collection
+    html = html.replace(/\[\[Category:([^\]]+)\]\]/gi, (match, cat) => {
+        categories.push(cat.trim());
+        return ''; 
+    });
+
+    // 8. Lists & Definition Lists
+    html = html.replace(/^(\*\*\*\*)\s*(.*)$/gm, '<ul style="margin-left:4.5em"><li>$2</li></ul>');
+    html = html.replace(/^(\*\*\*)\s*(.*)$/gm, '<ul style="margin-left:3em"><li>$2</li></ul>');
+    html = html.replace(/^(\*\*)\s*(.*)$/gm, '<ul style="margin-left:1.5em"><li>$2</li></ul>');
+    html = html.replace(/^(\*)\s*(.*)$/gm, '%%UL_LI%%$2%%/UL_LI%%');
+    
+    html = html.replace(/^(####)\s*(.*)$/gm, '<ol style="margin-left:4.5em"><li>$2</li></ol>');
+    html = html.replace(/^(###)\s*(.*)$/gm, '<ol style="margin-left:3em"><li>$2</li></ol>');
+    html = html.replace(/^(##)\s*(.*)$/gm, '<ol style="margin-left:1.5em"><li>$2</li></ol>');
+    html = html.replace(/^(#)\s*(.*)$/gm, '%%OL_LI%%$2%%/OL_LI%%');
+
+    html = html.replace(/^;(.*?)(?:\n:(.*))?$/gm, (m, dt, dd) => `<dl><dt>${parseInline(dt.trim())}</dt>` + (dd ? `<dd>${parseInline(dd.trim())}</dd>` : '') + `</dl>`);
+    html = html.replace(/^:(.*)$/gm, '<dl style="margin-left:1.6em"><dd>$1</dd></dl>');
+    html = html.replace(/<\/dl>\n<dl[^>]*>/g, '\n'); // Merge adjacent DLs
+
+    // 9. Headings & TOC
+    let tocItems = [];
+    let tocCount = 1;
+    // Strip redundant H1s from markup if present (controlled by SPA)
+    html = html.replace(/^=\s*(.*?)\s*=$/gm, ''); 
+    html = html.replace(/^====\s*(.*?)\s*====$/gm, '<h4>$1</h4>');
+    html = html.replace(/^===\s*(.*?)\s*===$/gm, '<h3>$1</h3>');
+    html = html.replace(/^==\s*(.*?)\s*==$/gm, (match, title) => {
+        let cleanTitle = title.replace(/<[^>]*>?/gm, '').replace(/\\/g, ''); 
+        let id = cleanTitle.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+        tocItems.push({ id: id, title: cleanTitle, number: tocCount++ });
+        return `<h2 id="${id}">${title}</h2>`;
+    });
+
+    // 10. Inline Formatting & Links
+    html = parseInline(html);
+
+    // 11. Wrap Paragraphs
+    let blocks = html.split(/\n\n+/);
+    html = blocks.map(block => {
+        if (block.trim() === '') return '';
+        if (/^(<\/?(table|ul|ol|dl|pre|blockquote|h[1-6]|div|hr|li|th|td|tr|tbody|thead|tfoot|caption|p|br)\b|%%%PROTECTED)/i.test(block.trim())) return block;
+        return `<p>${block}</p>`;
+    }).join('\n');
+
+    // 12. Restore Lists
+    html = html.replace(/(%%UL_LI%%.*?%%\/UL_LI%%\n?)+/g, (match) => `<ul>\n${match.replace(/%%UL_LI%%/g, '<li>').replace(/%%\/UL_LI%%/g, '</li>\n')}</ul>\n`);
+    html = html.replace(/(%%OL_LI%%.*?%%\/OL_LI%%\n?)+/g, (match) => `<ol>\n${match.replace(/%%OL_LI%%/g, '<li>').replace(/%%\/OL_LI%%/g, '</li>\n')}</ol>\n`);
+
+    // 13. Inject TOC
+    if (tocItems.length >= 3) {
+        let tocHtml = `<div class="toc"><div class="toc-title"><h2>Contents</h2></div><ul>`;
+        tocItems.forEach(item => { tocHtml += `<li><a href="#${item.id}"><span class="toc-number">${item.number}</span> <span class="toc-text">${item.title}</span></a></li>`; });
+        tocHtml += `</ul></div>`;
+        html = html.replace(/<h2/, tocHtml + '\n<h2');
+    }
+
+    // 14. Restore Protected Blocks
+    protectedBlocks.forEach((block, i) => { html = html.split(`%%%PROTECTED_${i}%%%`).join(block); });
+
+    // 15. Append References
+    if (refs.length > 0) {
+        let refListHtml = '<ol class="references">';
+        refs.forEach((ref, index) => {
+            refListHtml += `<li id="cite_note-${index+1}"><span class="mw-cite-backlink"><a href="#cite_ref-${index+1}">^</a></span> <span class="reference-text">${ref}</span></li>`;
+        });
+        refListHtml += '</ol>';
+        if (html.includes('<references/>')) html = html.replace(/<references\s*\/>/gi, refListHtml);
+        else html += '\n<h2 id="references">References</h2>\n' + refListHtml;
+    } else {
+        html = html.replace(/<references\s*\/>/gi, '');
+    }
+
+    // 16. Append Categories
+    if (categories.length > 0) {
+        let catHtml = '<div class="catlinks">Categories: <ul>';
+        categories.forEach(cat => { catHtml += `<li><a href="#/Category:${cat.replace(/ /g, '_')}">${cat}</a></li>`; });
+        catHtml += '</ul></div>';
+        html += catHtml;
+    }
+
+    return html;
+}
+
+// Inline parser helper
+function parseInline(text) {
+    let html = text;
+    html = html.replace(/'''''(.*?)'''''/g, '<b><i>$1</i></b>');
+    html = html.replace(/'''(.*?)'''/g, '<b>$1</b>');
+    html = html.replace(/''(.*?)''/g, '<i>$1</i>');
+    html = html.replace(/~~(.*?)~~/g, '<s>$1</s>');
+    html = html.replace(/<code>(.*?)<\/code>/g, '<code>$1</code>');
+    html = html.replace(/^----$/gm, '<hr>');
+
+    // External Links
+    html = html.replace(/\[(https?:\/\/[^\s\]]+)\s+([^\]]+)\]/g, '<a class="external text" href="$1" target="_blank" rel="noopener">$2</a>');
+    html = html.replace(/\[(https?:\/\/[^\s\]]+)\]/g, '<a class="external text" href="$1" target="_blank" rel="noopener">[link]</a>');
+
+    // Internal Links
+    html = html.replace(/\[\[([^|\]]+)\|([^\]]+)\]\]/g, (m, target, label) => {
+        if(target.startsWith(':Category:')) return `<a href="#/${target.substring(1).replace(/ /g, '_')}">${label}</a>`;
+        return checkLinkExists(target) ? `<a href="#/${target.trim().replace(/ /g, '_')}">${label}</a>` : `<a class="new" href="#/${target.trim().replace(/ /g, '_')}" title="Page does not exist">${label}</a>`;
+    });
+    html = html.replace(/\[\[([^\]]+)\]\]/g, (m, target) => {
+        if(target.startsWith('File:') || target.startsWith('Image:') || target.startsWith('Category:')) return m; // Handled elsewhere
+        if(target.startsWith(':Category:')) return `<a href="#/${target.substring(1).replace(/ /g, '_')}">${target.split(':')[2]}</a>`;
+        return checkLinkExists(target) ? `<a href="#/${target.trim().replace(/ /g, '_')}">${target}</a>` : `<a class="new" href="#/${target.trim().replace(/ /g, '_')}" title="Page does not exist">${target}</a>`;
+    });
+
+    return html;
+}
+
+// Utility to color links red if page doesn't exist in script tags
+function checkLinkExists(target) {
+    if(target.startsWith('#')) return true; // Section link
+    if(target.startsWith('Special:')) return true;
+    if(target.startsWith('Category:')) return true;
+    const cleanTarget = target.split('#')[0].replace(/ /g, '_');
+    return document.getElementById(`article-${cleanTarget}`) !== null;
+}
+
+// Helper tool
+function viewSource() {
+    if (!currentArticleName || currentArticleName.startsWith('Special:') || currentArticleName.startsWith('Category:')) return alert('Source not available for special generated pages.');
+    const db = document.getElementById(`article-${currentArticleName}`);
+    if(!db) return;
+    contentDiv.innerHTML = `<h3>Wikitext Source: ${currentArticleName.replace(/_/g, ' ')}</h3><pre style="background:#f8f9fa; padding:1em; border:1px dashed #ccc; white-space:pre-wrap; font-family:monospace; font-size: 0.9em;">${db.textContent.replace(/</g, '&lt;')}</pre>`;
+}
+
+// Boot the engine
+window.onload = initSite;
+</script>
+</body>
+</html>
